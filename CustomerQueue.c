@@ -21,10 +21,10 @@
 #endif
 
 //Initialize all the values of CUSTOMER
-void generateCustomer(CUSTOMER *customer, double order, int arrivalTime)
+void generateCustomer(CUSTOMER *customer, int arrivalTime)
 {
    customer->ID = randInt(1000,9999);
-   customer->order = order;
+   customer->order = 0; //Assigned when adding a customer.
    customer->arrivalTime = arrivalTime;
    customer->serviceTime = 0; //Will change when customer is first to allow line jumping
    customer->next = NULL;
@@ -39,32 +39,40 @@ void generateQueue(QUEUE *queue, int timeSBag, int timeMBag, int timeLBag)
    queue->timeSBag = timeSBag;
    queue->next = NULL;
 }
-//Add the customer object to the end of the queue
-void addCustToQueue(QUEUE *queue, double order, int arrivalTime)
+//Add a random customer object to the end of the queue
+void addRandCustToQueue(QUEUE *queue, int arrivalTime)
 {
-   int i;
+   int r = randInt(1,100);
    CUSTOMER *newCustomer = (CUSTOMER *)malloc(sizeof(CUSTOMER));
-   CUSTOMER *current;
    
-   generateCustomer(newCustomer,order,arrivalTime);
+   generateCustomer(newCustomer,arrivalTime);
    //Add the service time
-   if(newCustomer->order == LRG_BAG)
+   if(r <= 20) //20% chance for small
    {
-      newCustomer->serviceTime = queue->timeLBag;
+      newCustomer->order = SML_BAG;
+      newCustomer->serviceTime = queue->timeSBag;  
    }
-   else if(newCustomer->order == MED_BAG)
+   else if(r <= 70) //50% chance for medium
    {
+      newCustomer->order = MED_BAG;
       newCustomer->serviceTime = queue->timeMBag;
    }
-   else if(newCustomer->serviceTime = SML_BAG)
+   else //30% chance for large
    {
-      newCustomer->serviceTime = queue->timeSBag;
+      newCustomer->order = LRG_BAG;
+      newCustomer->serviceTime = queue->timeLBag;
    }
-         
+   addCustToQueue(newCustomer,queue);
+}
+//Adds customer to queue
+void addCustToQueue(CUSTOMER *cust, QUEUE *queue)
+{
+   CUSTOMER *current;
+   
    //If 1st customer in queue
    if(queue->next == NULL)
    {
-      queue->next = newCustomer;
+      queue->next = cust;
    }
    //Add customer to the last place in queue
    else
@@ -74,7 +82,7 @@ void addCustToQueue(QUEUE *queue, double order, int arrivalTime)
       {
          current = current->next;
       }
-      current->next = newCustomer;
+      current->next = cust;
    }
    queue->customers++;
 }
@@ -90,41 +98,55 @@ void removeFirstFromQueue(QUEUE *queue)
    {
       current = queue->next->next;
       queue->next = current;
-   
    }
    queue->customers--;
-   
 }
 //Service the first customer and updates the stats
 void serviceFirstCust(QUEUE *queue,STATS *stats)
 {
-   CUSTOMER *first = queue->next;
-   if(first->serviceTime == 0)
+   //Only Service first customer if there is a first customer
+   if(queue->next != NULL)
    {
-      //Updating Stats
-      stats->customersServed++;
-      if(first->order == LRG_BAG)
+      CUSTOMER *first = queue->next;
+      
+      stats->totalWaitTime += queue->customers-1; //Add wait time for each customer not in front.
+      if(first->serviceTime == 1) //Minutes are loops, so 1 minute is one loop.
       {
-         stats->totalSoldL++;
+         //printf("Served customer with order: %.2lf\n",first->order);
+         //Updating Stats
+         stats->customersServed++;
+         if(first->order == LRG_BAG)
+         {
+            stats->totalSoldL++;
+         }
+         else if(first->order == MED_BAG)
+         {
+            stats->totalSoldM++;
+         }
+         else if(first->order == SML_BAG)
+         {
+            stats->totalSoldS++;
+         }
+         stats->moneyMade += first->order;
+         //Removing first customer
+         removeFirstFromQueue(queue);
       }
-      else if(first->order == MED_BAG)
+      else //Decrements the service time
       {
-         stats->totalSoldM++;
+         first->serviceTime--;
       }
-      else if(first->order == SML_BAG)
-      {
-         stats->totalSoldS++;
-      }
-      stats->moneyMade += first->order;
-      //Removing first customer
-      removeFirstFromQueue(queue);
-   }
-   else //Decrements the service time
-   {
-      first->serviceTime--;
       //Updating Stats
       stats->totalServiceTime++;
+      if(queue->customers > stats->largestQueueSize)
+      {
+         stats->largestQueueSize = queue->customers;
+      }
+      stats->totalQueueSize += queue->customers;
    }
+}
+//Moves the last customer in line form QueueA to QueueB
+void moveLastFromTo(QUEUE *queueA, QUEUE *queueB)
+{
 }
 //Displays information about the Queue
 void displayQueue(const QUEUE *queue)
@@ -147,7 +169,6 @@ void displayCustomer(const CUSTOMER *customer)
 //Display the customers inside the queue
 void displayQueueLine(const QUEUE *queue)
 {
-
    CUSTOMER *current = queue->next;
    
    while(current != NULL)

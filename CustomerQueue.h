@@ -32,13 +32,15 @@ typedef struct QUEUE
    CUSTOMER *next;
 } QUEUE;
 
-void generateCustomer(CUSTOMER *customer, double order, int arrivalTime);
+void generateCustomer(CUSTOMER *customer, int arrivalTime);
 void displayCustomer(const CUSTOMER *customer);
 
 void generateQueue(QUEUE *queue,int timeSBag, int timeMBag, int timeLBag);
-void addCustToQueue(QUEUE *queue, double order, int arrivalTime);
+void addRandCustToQueue(QUEUE *queue, int arrivalTime);
+void addCustToQueue(CUSTOMER *cust, QUEUE *queue);
 void removeFirstFromQueue(QUEUE *queue);
 void serviceFirstCust(QUEUE *queue,STATS *stats);
+void moveLastFromTo(QUEUE *queueA, QUEUE *queueB);
 bool customersInQueue(QUEUE *queueA,QUEUE *queueB);
 void displayQueue(const QUEUE *queue);
 void displayQueueLine(const QUEUE *queue); //Debugging purposes

@@ -21,7 +21,7 @@ typedef struct STATS
    int totalSoldM;
    int totalSoldS;
    int largestQueueSize;
-   //avg queue size?
+   int totalQueueSize; //Used to calculated Average Queue Size
    double moneyMade;
    int servicePastClosing; //How long the store had to remain open to service customers
 }STATS;
@@ -31,12 +31,13 @@ int max(int a, int b);
 
 double getTaffyPounds(const STATS *stats);
 double getProfitEstimate(const STATS *stats);
+double getTotalAvgQueueSize(const STATS *statsA, const STATS *statsB, int maxTime);
 int getTotalService(const STATS *statsA, const STATS *statsB);
 int getTotalWait(const STATS *statsA, const STATS *statsB);
 int getTotalCust(const STATS *statsA, const STATS *statsB);
 int getTotalBags(const STATS *statsA, const STATS *statsB);
 
 void displayStats(const STATS *stats);
-void displayTotals(const STATS *statsA,const STATS *statsB);
+void displayTotals(const STATS *statsA, const STATS *statsB, int maxTime);
 
 #endif

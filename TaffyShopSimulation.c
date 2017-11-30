@@ -6,16 +6,14 @@
 // ===============================
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>//test
 #include <stdbool.h>
 
 #include "CustomerQueue.h"
 #include "Stats.h"
-//#include "Random.h"
+#include "Random.h"
 
-//Show Debugging?
-#define DEBUG
-#define MAX_TIME 10 //How long to run the simulation
+#define MAX_TIME 600 //How long to run the simulation
 
 #ifndef MENU
 #define MENU
@@ -34,7 +32,7 @@ int main()
    QUEUE queueA,queueB;
    STATS statsA,statsB;
    //Initialize the queues and the stats structs
-   srand(time(NULL));
+   randSeed();
    generateStats(&statsA);
    generateStats(&statsB);
    generateQueue(&queueA,1,2,4);
@@ -71,19 +69,25 @@ void runSimulation(double arrivalRate,QUEUE *queueA,QUEUE *queueB,STATS *statsA,
 {
    int timeLeft = MAX_TIME;
    int i;
-
-   for(i = 1; i <= 3; i++)
+   
+   while(customersInQueue(queueA,queueB) || timeLeft > 0)
    {
-      addCustToQueue(queueA,MED_BAG,i);
-   }
-   printf("Before:\n");
-   displayQueue(queueA);
-   while(customersInQueue(queueA,queueB))
-   {
+      //Only run if store is open
+      if(((double)randInt(0,100)/100) < arrivalRate && timeLeft > 0)
+      {  
+         if(queueA->customers < queueB->customers)
+         {
+            addRandCustToQueue(queueA,timeLeft);
+         }
+         else
+         {
+            addRandCustToQueue(queueB,timeLeft);
+         }
+      }
       serviceFirstCust(queueA,statsA);
+      serviceFirstCust(queueB,statsB);
+      timeLeft > 0 ? timeLeft-- : statsA->servicePastClosing++;
    }
-   printf("\nAfter:\n");
-   displayQueue(queueA);
 }
 //----------[Print all the statistics]
 void printAllStats(const STATS *statsA,const STATS *statsB)
@@ -93,8 +97,8 @@ void printAllStats(const STATS *statsA,const STATS *statsB)
    printf(" ======================\n");
    printf(" Line A Statistics:\n");
    displayStats(statsA);
-   //printf(" Line B Statistics:\n");
-   //displayStats(statsB);
-   //printf(" Totals:\n");
-   //displayTotals(statsA,statsB);
+   printf(" Line B Statistics:\n");
+   displayStats(statsB);
+   printf(" Totals:\n");
+   displayTotals(statsA,statsB, MAX_TIME);
 }

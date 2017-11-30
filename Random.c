@@ -1,4 +1,4 @@
-/*
+
 // ===============================
 // = Catherine Etter
 // = Tiffany's Taffy Shop Seminar Project
@@ -7,14 +7,14 @@
 // ===============================
 
 #include <time.h>
-#include "Random.c"
+#include "Random.h"
 
-void setRandSeed()
+void randSeed()
 {
    srand(time(NULL));
 }
-int getRandInt(int LB, int UB)
+int randInt(int LB, int UB)
 {
-   return ((rand() % (UB - (LB + 1))) + LB); 
+   return ((rand() % (UB - LB + 1)) + LB); 
 }
-*/
+
