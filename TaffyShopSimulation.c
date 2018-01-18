@@ -6,7 +6,7 @@
 // ===============================
 
 #include <stdio.h>
-#include <stdlib.h>//test
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include "CustomerQueue.h"
@@ -35,8 +35,8 @@ int main()
    randSeed();
    generateStats(&statsA);
    generateStats(&statsB);
-   generateQueue(&queueA,1,2,4);
-   generateQueue(&queueB,2,3,5);
+   generateQueue(&queueA,'A',1,2,4);
+   generateQueue(&queueB,'B',2,3,5);
    
    //Welcome message
    printf(" ================================\n");
@@ -48,6 +48,7 @@ int main()
    getInput(&arrivalRate);
    runSimulation(arrivalRate,&queueA,&queueB,&statsA,&statsB);
    printAllStats(&statsA,&statsB);
+   getche();
 }
 //----------[Get input from user]
 void getInput(double *arrivalRate)
@@ -59,6 +60,7 @@ void getInput(double *arrivalRate)
    while(intInput >= 1 || intInput <= 0)
    {
       printf(" Please enter the customer arrival rate between 0 and 1 exclusive.\n >> ");
+      //Use fgets to avoid "weird" values
       fgets(charInput,30,stdin);
       intInput = atof(charInput);
    }
@@ -68,13 +70,13 @@ void getInput(double *arrivalRate)
 void runSimulation(double arrivalRate,QUEUE *queueA,QUEUE *queueB,STATS *statsA,STATS *statsB)
 {
    int timeLeft = MAX_TIME;
-   int i;
    
    while(customersInQueue(queueA,queueB) || timeLeft > 0)
    {
       //Only run if store is open
       if(((double)randInt(0,100)/100) < arrivalRate && timeLeft > 0)
-      {  
+      {
+         //Determines the shortest queue to add the customer
          if(queueA->customers < queueB->customers)
          {
             addRandCustToQueue(queueA,timeLeft);
@@ -95,10 +97,6 @@ void printAllStats(const STATS *statsA,const STATS *statsB)
    printf("\n ======================\n");
    printf(" = Simulation Results =\n");
    printf(" ======================\n");
-   printf(" Line A Statistics:\n");
-   displayStats(statsA);
-   printf(" Line B Statistics:\n");
-   displayStats(statsB);
-   printf(" Totals:\n");
+   displayStats(statsA,statsB);
    displayTotals(statsA,statsB, MAX_TIME);
 }

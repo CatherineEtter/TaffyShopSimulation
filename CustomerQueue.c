@@ -1,8 +1,8 @@
 // ===============================
 // = Catherine Etter
 // = Tiffany's Taffy Shop Seminar Project
-// = Queue definitions file
-// = Queue.c
+// = CustomerQueue definitions file
+// = CustomerQueue.c
 // ===============================
 
 #include <stdio.h>
@@ -12,6 +12,8 @@
 #include "CustomerQueue.h"
 #include "Random.h"
 #include "Stats.h"
+
+//#define SHOW_PROCESS
 
 #ifndef MENU
 #define MENU
@@ -30,16 +32,17 @@ void generateCustomer(CUSTOMER *customer, int arrivalTime)
    customer->next = NULL;
 }
 //Initialize all the values of QUEUE
-void generateQueue(QUEUE *queue, int timeSBag, int timeMBag, int timeLBag)
+void generateQueue(QUEUE *queue, char type, int timeSBag, int timeMBag, int timeLBag)
 {
    //Initialize all the values of QUEUE
+   queue->type = type;
    queue->customers = 0;
    queue->timeLBag = timeLBag;
    queue->timeMBag = timeMBag;
    queue->timeSBag = timeSBag;
    queue->next = NULL;
 }
-//Add a random customer object to the end of the queue
+//Creates a random customer object and assigns customer to queue
 void addRandCustToQueue(QUEUE *queue, int arrivalTime)
 {
    int r = randInt(1,100);
@@ -85,11 +88,20 @@ void addCustToQueue(CUSTOMER *cust, QUEUE *queue)
       current->next = cust;
    }
    queue->customers++;
+#ifdef SHOW_PROCESS
+   printf("------Added in Queue%c------\n",queue->type);
+   displayCustomer(cust);
+#endif
 }
 //Removes the first customer from the queue
 void removeFirstFromQueue(QUEUE *queue)
 {
    CUSTOMER *current = queue->next;
+   
+#ifdef SHOW_PROCESS
+   printf("-----Removed from Queue%c-----\n",queue->type);
+   displayCustomer(current);
+#endif
    if(current->next == NULL)//If only 1 in the list
    {
       queue->next = NULL;

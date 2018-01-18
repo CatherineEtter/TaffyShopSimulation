@@ -1,8 +1,8 @@
 // ===============================
 // = Catherine Etter
 // = Tiffany's Taffy Shop Seminar Project
-// = Queue declarations file
-// = Queue.h
+// = CustomerQueue declarations file
+// = CustomerQueue.h
 // ===============================
 
 
@@ -25,6 +25,7 @@ typedef struct CUSTOMER
 
 typedef struct QUEUE
 {
+   char type;
    int customers; //# of customers currently in line
    int timeSBag;
    int timeMBag;
@@ -34,14 +35,14 @@ typedef struct QUEUE
 
 void generateCustomer(CUSTOMER *customer, int arrivalTime);
 void displayCustomer(const CUSTOMER *customer);
-
-void generateQueue(QUEUE *queue,int timeSBag, int timeMBag, int timeLBag);
+void generateQueue(QUEUE *queue, char type, int timeSBag, int timeMBag, int timeLBag);
 void addRandCustToQueue(QUEUE *queue, int arrivalTime);
 void addCustToQueue(CUSTOMER *cust, QUEUE *queue);
 void removeFirstFromQueue(QUEUE *queue);
 void serviceFirstCust(QUEUE *queue,STATS *stats);
 void moveLastFromTo(QUEUE *queueA, QUEUE *queueB);
 bool customersInQueue(QUEUE *queueA,QUEUE *queueB);
+
 void displayQueue(const QUEUE *queue);
 void displayQueueLine(const QUEUE *queue); //Debugging purposes
 

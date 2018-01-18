@@ -37,7 +37,7 @@ int getTotalWait(const STATS *statsA, const STATS *statsB);
 int getTotalCust(const STATS *statsA, const STATS *statsB);
 int getTotalBags(const STATS *statsA, const STATS *statsB);
 
-void displayStats(const STATS *stats);
+void displayStats(const STATS *statsA, const STATS *statsB);
 void displayTotals(const STATS *statsA, const STATS *statsB, int maxTime);
 
 #endif
